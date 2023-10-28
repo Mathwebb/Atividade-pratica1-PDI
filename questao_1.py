@@ -63,7 +63,7 @@ def marca_fronteira_v8(imagem: Image, modify=False):
 
 
 if __name__ == '__main__':
-    with Image.open('assets/folha.png') as image:
+    with Image.open('assets/aviao.png') as image:
         image_v4 = marca_fronteira_v4(image)
         image_v4.save('resultados/folha_marcada_V4.png')
         image_v8 = marca_fronteira_v8(image)

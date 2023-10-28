@@ -2,12 +2,25 @@ from PIL import Image
 # Documentação pillow: https://pillow.readthedocs.io/en/stable/index.html
 
 
+def inverte_imagem(imagem: Image, modify=False):
+    if not modify:
+        imagem = imagem.copy()
+    for line in range(imagem.width):
+        for column in range(imagem.height):
+            pixel = imagem.getpixel((line, column))
+            if pixel == 0:
+                imagem.putpixel((line, column), 1)
+            else:
+                imagem.putpixel((line, column), 0)
+    return imagem
+
+
 def marca_fronteira_v4(imagem: Image, modify=False):
     if not modify:
         imagem = imagem.copy()
-    for column in range(imagem.width):
-        for line in range(imagem.height):
-            preto = (0, 0, 0, 255)
+    for line in range(imagem.width):
+        for column in range(imagem.height):
+            preto = 0
             vizinhos = []
 
             try:
@@ -18,15 +31,15 @@ def marca_fronteira_v4(imagem: Image, modify=False):
             except IndexError as error:
                 pass
 
-            if imagem.getpixel((line, column)) == (255, 255, 255, 255) and len(vizinhos) == 4:
+            if imagem.getpixel((line, column)) == 1 and len(vizinhos) == 4:
                 for vizinho in vizinhos:
                     if vizinho == preto:
-                        imagem.putpixel((line, column), (255, 0, 0, 255))
+                        imagem.putpixel((line, column), 125)
 
-    for column in range(imagem.width):
-        for line in range(imagem.height):
-            if imagem.getpixel((line, column)) == (255, 255, 255, 255):
-                imagem.putpixel((line, column), (0, 0, 0, 255))
+    for line in range(imagem.width):
+        for column in range(imagem.height):
+            if imagem.getpixel((line, column)) == 1:
+                imagem.putpixel((line, column), 0)
 
     return imagem
 
@@ -34,8 +47,8 @@ def marca_fronteira_v4(imagem: Image, modify=False):
 def marca_fronteira_v8(imagem: Image, modify=False):
     if not modify:
         imagem = imagem.copy()
-    for column in range(imagem.width):
-        for line in range(imagem.height):
+    for line in range(imagem.width):
+        for column in range(imagem.height):
             vizinhos = []
 
             try:
@@ -50,15 +63,15 @@ def marca_fronteira_v8(imagem: Image, modify=False):
             except IndexError as error:
                 pass
 
-            if imagem.getpixel((line, column)) == (255, 255, 255, 255) and len(vizinhos) == 8:
+            if imagem.getpixel((line, column)) == 1 and len(vizinhos) == 8:
                 for vizinho in vizinhos:
-                    if vizinho == (0, 0, 0, 255):
-                        imagem.putpixel((line, column), (255, 0, 0, 255))
+                    if vizinho == 0:
+                        imagem.putpixel((line, column), 125)
 
-    for column in range(imagem.width):
-        for line in range(imagem.height):
-            if imagem.getpixel((line, column)) == (255, 255, 255, 255):
-                imagem.putpixel((line, column), (0, 0, 0, 255))
+    for line in range(imagem.width):
+        for column in range(imagem.height):
+            if imagem.getpixel((line, column)) == 1:
+                imagem.putpixel((line, column), 0)
 
     return imagem
 
@@ -117,8 +130,8 @@ def equaliza(imagem: Image, modify=False):
     for intensidade in fda:
         fda_round.append(round(intensidade))
 
-    for column in range(imagem.width):
-        for line in range(imagem.height):
+    for line in range(imagem.width):
+        for column in range(imagem.height):
             intensidade_pixel = imagem.getpixel((line, column))
             imagem.putpixel((line, column), fda_round[intensidade_pixel])
 
@@ -126,14 +139,16 @@ def equaliza(imagem: Image, modify=False):
 
 
 if __name__ == '__main__':
-    # with Image.open('assets/folha.png') as imagem:
-    #     imagem_v4 = marca_fronteira_v4(imagem)
-    #     imagem_v4.save('resultados/folha_marcada_V4.png')
-    #     imagem_v8 = marca_fronteira_v8(imagem)
-    #     imagem_v8.save('resultados/folha_marcada_v8.png')
+    with Image.open('assets/aviao.png') as imagem:
+        imagem = inverte_imagem(imagem)
+        imagem.save('resultados/aviao_invertido.png')
+        imagem_v4 = marca_fronteira_v4(imagem)
+        imagem_v4.save('resultados/folha_marcada_V4.png')
+        imagem_v8 = marca_fronteira_v8(imagem)
+        imagem_v8.save('resultados/folha_marcada_v8.png')
 
-    with Image.open('assets/lena_gray.bmp') as imagem:
-        equaliza(imagem)
-        imagem.show()
-        equaliza(imagem)
-        imagem.show()
+    # with Image.open('assets/lena_gray.bmp') as imagem:
+    #     equaliza(imagem)
+    #     imagem.show()
+    #     equaliza(imagem)
+    #     imagem.show()
